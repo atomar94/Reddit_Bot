@@ -1,2 +1,2 @@
 # Reddit_Bot
-Playing around with the Reddit API
+Making a bot to analyze some Reddit data!

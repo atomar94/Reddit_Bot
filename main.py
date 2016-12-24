@@ -1,11 +1,17 @@
 import praw
 import configloader
+import subredditmodel
 
+THRESHHOLD = 2000
 
-#Given a submission object return a list of comment text.
+#Given a submission object return a list of comments longer than threshhold.
 def load_comments(submission):
-	submission.comments.replace_more(limit=0)
-	return [x.body for x in submission.comments.list()]
+	retlist = []
+	submission.comments.replace_more(limit=10)
+	for comment in submission.comments.list():
+		if len(comment.body) > THRESHHOLD:
+			retlist.append(comment)
+	print()
 
 
 if __name__ == "__main__":
@@ -15,14 +21,6 @@ if __name__ == "__main__":
 					client_secret = cfg.client_secret,
 					user_agent = cfg.user_agent)
 
-	for submission in r.subreddit("askreddit").hot(limit=2):
-		comment_list = load_comments(submission)
-		for comment in comment_list:
-			if "reddit" in comment:
-				try:
-					print(comment)
-				#because python doesnt like windows unicode translation
-				except UnicodeEncodeError:
-					print("a comment could not displayed.")
-				input()
-
+	askreddit_model = subredditmodel.SubredditModel(praw_object=r, 
+													subreddit="askreddit")
+	print(askreddit_model.get_score_distribution())
