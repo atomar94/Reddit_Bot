@@ -14,8 +14,13 @@ class ConfigLoader(configparser.ConfigParser):
 
 		if cfgfile:
 			self.read(cfgfile)
-			self.username = self["CREDENTIALS"]["Username"]
-			self.password = self["CREDENTIALS"]["Password"]
-			self.client_id = self["AUTH"]["ClientID"]
-			self.client_secret = self["AUTH"]["ClientID"]
-			self.user_agent = self["AUTH"]["UserAgent"]
+
+	def read(self, filename):
+		super(configparser.ConfigParser, self).read(filename)
+		self.username = self["CREDENTIALS"]["Username"]
+		self.password = self["CREDENTIALS"]["Password"]
+		self.client_id = self["AUTH"]["ClientID"]
+		self.client_secret = self["AUTH"]["Secret"]
+		self.user_agent = self["AUTH"]["UserAgent"]
+
+
