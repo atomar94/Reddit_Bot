@@ -19,7 +19,6 @@ class SubredditModel:
 		self.comment_df = pd.DataFrame({"Length": [len(x.body) for x in comment_list],
 										"Score": [x.score for x in comment_list]
 										})
-		print("All Comments for %s loaded" % self.subreddit)
 
 	def get_df(self):
 		return self.comment_df

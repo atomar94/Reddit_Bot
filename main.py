@@ -26,8 +26,8 @@ if __name__ == "__main__":
 	for line in subfile.read().split("\n"):
 		print("Fetching subreddit %s" % line)
 		sub = subredditmodel.SubredditModel(praw_object=r,
-													subreddit=line[:-1])
-		sns.distplot(sub.get_df()["Length"], ax=axes[y_i, y_i])
+													subreddit=line)
+		sns.distplot(sub.get_df()["Length"], ax=axes[x_i, y_i], bins=15, label=line)
 
 		x_i = x_i + 1
 		if x_i == 5:
