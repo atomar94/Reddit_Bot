@@ -1,18 +1,8 @@
 import praw
 import configloader
 import subredditmodel
-
-THRESHHOLD = 2000
-
-#Given a submission object return a list of comments longer than threshhold.
-def load_comments(submission):
-	retlist = []
-	submission.comments.replace_more(limit=10)
-	for comment in submission.comments.list():
-		if len(comment.body) > THRESHHOLD:
-			retlist.append(comment)
-	print()
-
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 if __name__ == "__main__":
 	cfg = configloader.ConfigLoader("credentials.ini")
@@ -23,4 +13,6 @@ if __name__ == "__main__":
 
 	askreddit_model = subredditmodel.SubredditModel(praw_object=r, 
 													subreddit="askreddit")
-	print(askreddit_model.get_score_distribution())
+	
+	sns.kdeplot(askreddit_model.get_df().score)
+	plt.show()

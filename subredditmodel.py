@@ -1,28 +1,42 @@
-
+import pandas as pd
 
 class SubredditModel:
 
-	THRESHHOLD = 2000
+	#THRESHHOLD = 2000
+	THRESHHOLD = 100
 
-	#returns the percent of comments above the threshhold
-	def get_percent_long(self):
-		return(len(self.comments) / self.comments_read)
+	def load(self, subreddit=""):
+		if subreddit == "":
+			subreddit = self.subreddit
+		else:
+			self.subreddit = subreddit
 
+		comment_list = []
+		#for submission in self.praw.subreddit(self.subreddit).hot(limit=25):
+		for submission in self.praw.subreddit(self.subreddit).hot(limit=2):
+			comment_list = self.get_submission_comments(submission) + comment_list
 
-	#return a list of scores of the long comments.
-	def get_score_distribution(self):
-		self.scores = [x.score for x in self.comments]
-		return self.scores
+		self.comment_df = pd.DataFrame({"length": [len(x.body) for x in comment_list],
+										"score": [x.score for x in comment_list]
+										})
+		print("All Comments for %s loaded" % self.subreddit)
+
+	def get_df(self):
+		return self.comment_df
 
 	#Given a submission object append to the class list the comments longer than threshhold.
-	def load_submission_comments(self, submission):
-		submission.comments.replace_more(limit=32)
+	def get_submission_comments(self, submission):
+		retlist = []
+		#submission.comments.replace_more(limit=32)
+		submission.comments.replace_more(limit=1)
 		comment_list = submission.comments.list()
 		self.comments_read = self.comments_read + len(comment_list)
 
 		for comment in comment_list:
 			if len(comment.body) > self.THRESHHOLD:
-				self.comments.append(comment)
+				retlist.append(comment)
+
+		return retlist
 
 	def __init__(self, praw_object, subreddit):
 		self.praw = praw_object
@@ -31,5 +45,4 @@ class SubredditModel:
 		self.scores = []
 		self.comments_read = 0
 
-		for submission in self.praw.subreddit(self.subreddit).hot(limit=25):
-			self.load_submission_comments(submission)
+		self.load(subreddit)
