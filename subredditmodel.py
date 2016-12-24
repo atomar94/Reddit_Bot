@@ -16,8 +16,8 @@ class SubredditModel:
 		for submission in self.praw.subreddit(self.subreddit).hot(limit=2):
 			comment_list = self.get_submission_comments(submission) + comment_list
 
-		self.comment_df = pd.DataFrame({"length": [len(x.body) for x in comment_list],
-										"score": [x.score for x in comment_list]
+		self.comment_df = pd.DataFrame({"Length": [len(x.body) for x in comment_list],
+										"Score": [x.score for x in comment_list]
 										})
 		print("All Comments for %s loaded" % self.subreddit)
 

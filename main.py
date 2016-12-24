@@ -13,10 +13,28 @@ if __name__ == "__main__":
 					client_secret = cfg.client_secret,
 					user_agent = cfg.user_agent)
 
-	askreddit_model = subredditmodel.SubredditModel(praw_object=r, 
-													subreddit="askreddit")
-	
-	df = askreddit_model.get_df()
-	sns.jointplot(df.score, df.length, kind="reg", color="#4CB391", xlim=(0, 500), ylim=(0, 1000))
 
+
+	models = []
+	sns.set(style="white", palette="muted", color_codes=True)
+	f, axes = plt.subplots(5, 5, figsize=(12, 12))
+	sns.despine(left=True)
+
+	subfile = open("subreddits.txt", 'r')
+	x_i = 0
+	y_i = 0
+	for line in subfile.read().split("\n"):
+		print("Fetching subreddit %s" % line)
+		sub = subredditmodel.SubredditModel(praw_object=r,
+													subreddit=line[:-1])
+		sns.distplot(sub.get_df()["Length"], ax=axes[y_i, y_i])
+
+		x_i = x_i + 1
+		if x_i == 5:
+			x_i = 0
+			y_i = y_i + 1
+
+	
+	plt.setp(axes, yticks=[])
+	plt.tight_layout()
 	plt.show()
