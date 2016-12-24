@@ -2,6 +2,7 @@ import praw
 import configloader
 import subredditmodel
 import matplotlib.pyplot as plt
+from scipy.stats import kendalltau
 import seaborn as sns
 from charts import Charts as ch
 
@@ -16,6 +17,6 @@ if __name__ == "__main__":
 													subreddit="askreddit")
 	
 	df = askreddit_model.get_df()
-	ch.kdeplot(df.score, df.length)
+	sns.jointplot(df.score, df.length, kind="reg", color="#4CB391", xlim=(0, 500), ylim=(0, 1000))
 
 	plt.show()
