@@ -3,6 +3,7 @@ import configloader
 import subredditmodel
 import matplotlib.pyplot as plt
 import seaborn as sns
+from charts import Charts as ch
 
 if __name__ == "__main__":
 	cfg = configloader.ConfigLoader("credentials.ini")
@@ -14,5 +15,7 @@ if __name__ == "__main__":
 	askreddit_model = subredditmodel.SubredditModel(praw_object=r, 
 													subreddit="askreddit")
 	
-	sns.kdeplot(askreddit_model.get_df().score)
+	df = askreddit_model.get_df()
+	ch.kdeplot(df.score, df.length)
+
 	plt.show()
