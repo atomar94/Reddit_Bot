@@ -65,11 +65,11 @@ class Charts:
 												 color=color
 												 )
 
-			xmax = df["Score"].quantile(0.98)
+			xmax = df["Score"].quantile(0.995)
 			ax.set_xticks( Charts.generate_axes(0, xmax) )
 			ax.set_xlim(0, xmax)
 			hsf = df['Score'].size #Histogram Scaling Factor (because it is set to unity)
-			#ax.set_yticklabels(['{:1.2f}%'.format(x*100) for x in ax.get_yticks()])
+			ax.set_yticklabels(['{:1.2f}%'.format(x*100) for x in ax.get_yticks()])
 			x_i = x_i + 1
 			if x_i == 3:
 				x_i = 0
