@@ -33,7 +33,7 @@ if __name__ == "__main__":
 
 	models = []
 	sns.set(style="white", palette="muted", color_codes=True)
-	f, axes = plt.subplots(9, 3, figsize=(12, 42))
+	f, axes = plt.subplots(5, 5, figsize=(20, 20/5 * 3/5 * 5), sharey=True, sharex=True)
 	sns.despine(left=True)
 
 	subfile = open("subreddits.txt", 'r')
@@ -60,16 +60,15 @@ if __name__ == "__main__":
 			if i % 2 == 0:
 				thinned_vals.append(tick)
 
-		ax.set_yticks(thinned_vals)
-		ax.set_yticklabels(['{:1.2f}%'.format(x*100) for x in thinned_vals])
+		#ax.set_yticks(thinned_vals)
+		#ax.set_yticklabels(['{:1.2f}%'.format(x*100) for x in thinned_vals])
 		
 
 		x_i = x_i + 1
-		if x_i == 3:
+		if x_i == 5:
 			x_i = 0
 			y_i = y_i + 1
 
 	
-	#plt.setp(axes, yticks=[0, 0.5, 1.0])
 	plt.tight_layout()
 	plt.show()

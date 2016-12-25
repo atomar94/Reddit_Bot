@@ -19,7 +19,7 @@ askscience
 EarthPorn
 books
 television
-LifeProTip
+LifeProTips
 mildlyinteresting
 DIY
 Showerthoughts
