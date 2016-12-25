@@ -19,28 +19,32 @@ class Charts:
 		y_i = 0
 
 		index = 1
-		color_function = sns.color_palette("Set2", 24)
+		color_function = sns.color_palette("Set2", 12)
 
 		for color, line in zip(color_function, subfile.read().split("\n")):
 			print("Fetching subreddit %s (%d of 24)" % (line, index))
 			sub = subredditmodel.SubredditModel(praw_object=r,
-														subreddit=line)
+												subreddit=line)
 			df = sub.get_df()
 
-			xmax = df['Length'].quantile(0.70)
-			ymax = df['Score'].quantile(0.70)
+			xmax = df['Length'].quantile(0.95)
+			ymax = df['Score'].quantile(0.80)
+			xmin = 0
+			ymin = min(-10, -1*ymax) #show upvotes to at least -10
+
 			ax = sns.kdeplot(df['Length'], df['Score'], 
 											ax=axes[y_i, x_i], 
 											kind="hex",
 											shade=True,
 											color=color,
-											xlim=(0, xmax), 
-											ylim=(0, ymax)
+											gridsize=10
+											#xlim=(0, xmax), 
+											#ylim=(0, ymax)
 											) 
 
 			#ax.set_xticks( Charts.generate_axes(0, xmax) )
-			ax.set_xlim(0, xmax)
-			ax.set_ylim(0, ymax)
+			ax.set_xlim(xmin, xmax)
+			ax.set_ylim(ymin, ymax)
 			#ax.set_yticklabels(['{:1.2f}%'.format(x*100) for x in ax.get_yticks()])
 			x_i = x_i + 1
 			if x_i == 3:
