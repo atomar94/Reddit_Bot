@@ -33,42 +33,37 @@ if __name__ == "__main__":
 
 	models = []
 	sns.set(style="white", palette="muted", color_codes=True)
-	f, axes = plt.subplots(5, 5, figsize=(20, 20/5 * 3/5 * 5), sharey=True, sharex=True)
+	f, axes = plt.subplots(8, 3, figsize=(10, 90), sharey=True)
 	sns.despine(left=True)
 
 	subfile = open("subreddits.txt", 'r')
 	x_i = 0
 	y_i = 0
 
-	for color, line in zip(sns.cubehelix_palette(25), subfile.read().split("\n")):
-		print("Fetching subreddit %s" % line)
+	index = 1
+	for color, line in zip(sns.cubehelix_palette(24), subfile.read().split("\n")):
+		print("Fetching subreddit %s (%d of 24)" % (line, index))
 		sub = subredditmodel.SubredditModel(praw_object=r,
 													subreddit=line)
 		df = sub.get_df()
 		ax = sns.distplot(df["Length"], ax=axes[y_i, x_i], 
-											 label=line,
 											 hist=False,
+											 label=line,
 											 kde_kws={"shade": True},
 											 color=color
 											 )
 
-		ax.set_xticks( generate_axes(df["Length"].min(), df["Length"].max()) )
+		#ax.set_xticks( generate_axes(df["Length"].min(), df["Length"].max()) )
+		ax.set_xlim(0, 1200)
+		ax.set_xticks( [0, 200, 400, 600, 800, 1000, 1200] )
+		ax.set_yticklabels(['{:1.2f}%'.format(x*100) for x in ax.get_yticks()])
 		
-		old_vals = ax.get_yticks()
-		thinned_vals = []
-		for i, tick in enumerate(old_vals):
-			if i % 2 == 0:
-				thinned_vals.append(tick)
-
-		#ax.set_yticks(thinned_vals)
-		#ax.set_yticklabels(['{:1.2f}%'.format(x*100) for x in thinned_vals])
-		
-
 		x_i = x_i + 1
-		if x_i == 5:
+		if x_i == 3:
 			x_i = 0
 			y_i = y_i + 1
 
-	
+		index = index + 1
+
 	plt.tight_layout()
 	plt.show()
