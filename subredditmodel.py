@@ -3,7 +3,7 @@ import pandas as pd
 class SubredditModel:
 
 	#so we dont pull as much data while just looking at graphical stuff
-	testing = False
+	testing = True
 
 	def load(self, subreddit=""):
 		if subreddit == "":

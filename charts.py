@@ -1,5 +1,6 @@
 import seaborn as sns
 import matplotlib.pyplot as plt
+import numpy as np
 
 import subredditmodel
 
@@ -23,6 +24,61 @@ class Charts:
 										 )
 		return jp
 
+
+	#given a min and max return a reasonable number of ticks for an axis
+	#as a list
+	def generate_axes(mmin, mmax):
+		span = mmax - mmin
+		#max 5 ticks
+		i = 100
+		while True:
+			if span  / i > 5:
+				i = i * 2
+			else:
+				break
+
+		return np.arange(0, mmax, i)
+
+	def plot_score_distribution(r):
+		models = []
+		sns.set(style="white", palette="muted", color_codes=True)
+		f, axes = plt.subplots(8, 3, figsize=(10, 90), sharey=True)
+		sns.despine(left=True)
+
+		subfile = open("subreddits.txt", 'r')
+		x_i = 0
+		y_i = 0
+
+		index = 1
+		for color, line in zip(sns.cubehelix_palette(24), subfile.read().split("\n")):
+			print("Fetching subreddit %s (%d of 24)" % (line, index))
+			sub = subredditmodel.SubredditModel(praw_object=r,
+														subreddit=line)
+			df = sub.get_df()
+			ax = sns.distplot(df["Score"], ax=axes[y_i, x_i], 
+												 hist=False,
+												 label=line,
+												 kde_kws={"shade": True},
+												 color=color
+												 )
+
+			#ax.set_xticks( generate_axes(df["Length"].min(), df["Length"].max()) )
+			#ax.set_xlim(0, 800)
+			ax.set_xticks([0, 25, 50, 75, 100])
+			ax.set_yticklabels(['{:1.2f}%'.format(x*100) for x in ax.get_yticks()])
+		x_i = x_i + 1
+		if x_i == 3:
+			x_i = 0
+			y_i = y_i + 1
+
+		index = index + 1
+
+		plt.tight_layout()
+		plt.subplots_adjust(wspace=0.2, hspace=0.2)
+		plt.show()
+
+
+
 	#takes a praw object
 	def plot_distribution(r):
 		models = []
@@ -35,12 +91,12 @@ class Charts:
 		y_i = 0
 
 		index = 1
-		for color, line in zip(sns.cubehelix_palette(6), subfile.read().split("\n")):
+		for color, line in zip(sns.cubehelix_palette(24), subfile.read().split("\n")):
 			print("Fetching subreddit %s (%d of 24)" % (line, index))
 			sub = subredditmodel.SubredditModel(praw_object=r,
 														subreddit=line)
 			df = sub.get_df()
-			ax = sns.distplot(df["Length"], ax=axes[y_i, x_i], 
+			ax = sns.distplot(df["Score"], ax=axes[y_i, x_i], 
 												 hist=False,
 												 label=line,
 												 kde_kws={"shade": True},
@@ -48,8 +104,8 @@ class Charts:
 												 )
 
 			#ax.set_xticks( generate_axes(df["Length"].min(), df["Length"].max()) )
-			ax.set_xlim(0, 1200)
-			ax.set_xticks( [0, 200, 400, 600, 800, 1000, 1200] )
+			#ax.set_xlim(0, 800)
+			ax.set_xticks( Charts.generate_axes(0, df['Score'].max()) )
 			ax.set_yticklabels(['{:1.2f}%'.format(x*100) for x in ax.get_yticks()])
 			
 			x_i = x_i + 1
