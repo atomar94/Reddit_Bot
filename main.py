@@ -17,4 +17,4 @@ if __name__ == "__main__":
 
 
 
-	ch.plot_score_distribution(r)
+	ch.kdeplot(r)

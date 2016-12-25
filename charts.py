@@ -8,21 +8,102 @@ import subredditmodel
 #Is static class so dont need to instantiate anything.
 class Charts:
 
-	def kdeplot(data1, data2, xmin=-50, xmax=100, ymin=0, ymax=700):
-		kde = sns.kdeplot(data1, data2, shade=True)
-		axes = kde.axes
-		axes.set_xlim(xmin, xmax) #set the x range
-		axes.set_ylim(ymin, ymax)
-		return kde
+	#takes praw obj
+	def kdeplot(r):
+		sns.set(style="white", palette="muted", color_codes=True)
+		f, axes = plt.subplots(8, 3, figsize=(10, 150))
+		sns.despine(left=True)
+
+		subfile = open("subreddits.txt", 'r')
+		x_i = 0
+		y_i = 0
+
+		index = 1
+		color_function = sns.color_palette("Set2", 24)
+
+		for color, line in zip(color_function, subfile.read().split("\n")):
+			print("Fetching subreddit %s (%d of 24)" % (line, index))
+			sub = subredditmodel.SubredditModel(praw_object=r,
+														subreddit=line)
+			df = sub.get_df()
+
+			xmax = df['Length'].quantile(0.70)
+			ymax = df['Score'].quantile(0.70)
+			ax = sns.kdeplot(df['Length'], df['Score'], 
+											ax=axes[y_i, x_i], 
+											kind="hex",
+											shade=True,
+											color=color,
+											xlim=(0, xmax), 
+											ylim=(0, ymax)
+											) 
+
+			#ax.set_xticks( Charts.generate_axes(0, xmax) )
+			ax.set_xlim(0, xmax)
+			ax.set_ylim(0, ymax)
+			#ax.set_yticklabels(['{:1.2f}%'.format(x*100) for x in ax.get_yticks()])
+			x_i = x_i + 1
+			if x_i == 3:
+				x_i = 0
+				y_i = y_i + 1
+
+			index = index + 1
+
+		subfile.close()
+
+		plt.tight_layout()
+		plt.subplots_adjust(wspace=0.2, hspace=0.4)
+		plt.show()
 
 
-	def jointplot(data1, data2):
-		jp = sns.jointplot(data1, data2, kind="hex", 
-										 color="#4CB391", 
-										 xlim=(0, 500), 
-										 ylim=(0, 1000)
-										 )
-		return jp
+	#takes a praw object
+	#broken becuase jointplot is a different type of plot than the others.
+	def jointplot(r):
+		sns.set(style="white", palette="muted", color_codes=True)
+		sns.despine(left=True)
+
+		subfile = open("subreddits.txt", 'r')
+		x_i = 0
+		y_i = 0
+
+		index = 1
+
+		dfs = []
+		for line in subfile.read().split("\n"):
+			print("Fetching subreddit %s (%d of 24)" % (line, index))
+			sub = subredditmodel.SubredditModel(praw_object=r,
+												subreddit=line)
+			dfs.append(sub.get_df())
+			index = index + 1
+
+		all_dfs = pd.concat(dfs)
+
+		sns.jointplot(all_dfs['Length'], all_dfs['Score'], kind="hex", stat_func=kendalltau, color="#4CB391")
+
+		subfile.close()
+
+		plt.tight_layout()
+		plt.subplots_adjust(wspace=0.2, hspace=0.2)
+		plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 	#given a min and max return a reasonable number of ticks for an axis
@@ -39,9 +120,8 @@ class Charts:
 
 		return np.arange(0, mmax, i)
 
-		#takes a praw object
+	#takes a praw object
 	def plot_score_distribution(r):
-		models = []
 		sns.set(style="white", palette="muted", color_codes=True)
 		f, axes = plt.subplots(8, 3, figsize=(10, 90))
 		sns.despine(left=True)
@@ -68,7 +148,6 @@ class Charts:
 			xmax = df["Score"].quantile(0.995)
 			ax.set_xticks( Charts.generate_axes(0, xmax) )
 			ax.set_xlim(0, xmax)
-			hsf = df['Score'].size #Histogram Scaling Factor (because it is set to unity)
 			ax.set_yticklabels(['{:1.2f}%'.format(x*100) for x in ax.get_yticks()])
 			x_i = x_i + 1
 			if x_i == 3:
@@ -87,7 +166,6 @@ class Charts:
 	#this one is for length graphs
 	#takes a praw object
 	def plot_distribution(r):
-		models = []
 		sns.set(style="white", palette="muted", color_codes=True)
 		f, axes = plt.subplots(8, 3, figsize=(10, 90), sharey=True)
 		sns.despine(left=True)
