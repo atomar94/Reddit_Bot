@@ -13,6 +13,9 @@ class Charts:
 
 
 	def jointplot(data1, data2):
-		jp = sns.jointplot(data1, data2, kind="hex", color="#4CB391", xlim=(0, 500), ylim=(0, 1000))
+		jp = sns.jointplot(data1, data2, kind="hex", 
+										 color="#4CB391", 
+										 xlim=(0, 500), 
+										 ylim=(0, 1000)
+										 )
 		return jp
-
