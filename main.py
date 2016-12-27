@@ -17,4 +17,4 @@ if __name__ == "__main__":
 
 
 
-	ch.kdeplot(r)
+	ch.single_kdeplot(r)

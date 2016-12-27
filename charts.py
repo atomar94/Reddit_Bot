@@ -1,12 +1,68 @@
 import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
 import subredditmodel
 
 #Helper class for plotting
 #Is static class so dont need to instantiate anything.
 class Charts:
+
+	#takes praw obj
+	def single_kdeplot(r):
+		sns.set(style="white", palette="muted", color_codes=True)
+		sns.despine(left=True)
+
+		subfile = open("subreddits.txt", 'r')
+		x_i = 0
+		y_i = 0
+
+		color_function = sns.color_palette("Set2", 24)
+
+		dfs = []
+
+		for index, line in enumerate(subfile.read().split("\n")):
+			print("Loading  /r/%s (%d of 24)" % (line, index))
+			sub = subredditmodel.SubredditModel(praw_object=r,
+												subreddit=line)
+			dfs.append(sub.get_df())
+
+		subfile.close()
+		df = pd.concat(dfs)
+
+		#drop nan so quantile() never returns NaN.
+		xmax = df['Length'].dropna().quantile(0.85)
+		ymax = df['Filtered_Score'].dropna().quantile(0.90)
+		xmin = -5 #give some space in the graph
+		ymin = min(-10, int(-1*ymax*0.3)) #show upvotes to at least -10
+
+
+		bi_colors = ["#ff0080", "#a349a4", "#0000ff"]
+		bi_palette = sns.color_palette(palette=bi_colors)
+
+		print("Plotting...")
+		ax = sns.kdeplot(df['Length'], df['Filtered_Score'],  
+										kind="hex",
+										shade=True,
+										color="#a349a4",
+										gridsize=100
+										#xlim=(0, xmax), 
+										#ylim=(0, ymax)
+										) 
+
+		ax.set_title("All Comments")
+		#ax.set_xticks( Charts.generate_axes(0, xmax) )
+		ax.set_xlim(xmin, xmax)
+		ax.set_ylim(ymin, ymax)
+		#ax.set_yticklabels(['{:1.2f}%'.format(x*100) for x in ax.get_yticks()])
+
+		plt.tight_layout(pad=0.7)
+		#plt.margins(0.5)
+		#plt.subplots_adjust(wspace=0.2, hspace=0.8)
+		plt.show()
+
+
 
 	#takes praw obj
 	def kdeplot(r):
@@ -22,7 +78,7 @@ class Charts:
 		color_function = sns.color_palette("Set2", 24)
 
 		for color, line in zip(color_function, subfile.read().split("\n")):
-			print("Fetching subreddit %s (%d of 24)" % (line, index))
+			print("Loading  /r/%s (%d of 24)" % (line, index))
 			sub = subredditmodel.SubredditModel(praw_object=r,
 												subreddit=line)
 			df = sub.get_df()
@@ -32,6 +88,7 @@ class Charts:
 			xmin = -5 #give some space in the graph
 			ymin = min(-10, int(-1*ymax*0.3)) #show upvotes to at least -10
 
+			print("Plotting...")
 			ax = sns.kdeplot(df['Length'], df['Score'], 
 											ax=axes[y_i, x_i], 
 											kind="hex",
