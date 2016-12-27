@@ -11,7 +11,7 @@ class Charts:
 	#takes praw obj
 	def kdeplot(r):
 		sns.set(style="white", palette="muted", color_codes=True)
-		f, axes = plt.subplots(8, 3, figsize=(10, 150))
+		f, axes = plt.subplots(8, 3, figsize=(10, 20))
 		sns.despine(left=True)
 
 		subfile = open("subreddits.txt", 'r')
@@ -19,7 +19,7 @@ class Charts:
 		y_i = 0
 
 		index = 1
-		color_function = sns.color_palette("Set2", 12)
+		color_function = sns.color_palette("Set2", 24)
 
 		for color, line in zip(color_function, subfile.read().split("\n")):
 			print("Fetching subreddit %s (%d of 24)" % (line, index))
@@ -27,21 +27,22 @@ class Charts:
 												subreddit=line)
 			df = sub.get_df()
 
-			xmax = df['Length'].quantile(0.95)
-			ymax = df['Score'].quantile(0.80)
-			xmin = 0
-			ymin = min(-10, -1*ymax) #show upvotes to at least -10
+			xmax = df['Length'].quantile(0.85)
+			ymax = df['Score'].quantile(0.90)
+			xmin = -5 #give some space in the graph
+			ymin = min(-10, int(-1*ymax*0.3)) #show upvotes to at least -10
 
 			ax = sns.kdeplot(df['Length'], df['Score'], 
 											ax=axes[y_i, x_i], 
 											kind="hex",
 											shade=True,
 											color=color,
-											gridsize=10
+											gridsize=400
 											#xlim=(0, xmax), 
 											#ylim=(0, ymax)
 											) 
 
+			ax.set_title(sub.subreddit)
 			#ax.set_xticks( Charts.generate_axes(0, xmax) )
 			ax.set_xlim(xmin, xmax)
 			ax.set_ylim(ymin, ymax)
@@ -55,8 +56,9 @@ class Charts:
 
 		subfile.close()
 
-		plt.tight_layout()
-		plt.subplots_adjust(wspace=0.2, hspace=0.4)
+		plt.tight_layout(pad=0.7)
+		#plt.margins(0.5)
+		plt.subplots_adjust(wspace=0.2, hspace=0.8)
 		plt.show()
 
 

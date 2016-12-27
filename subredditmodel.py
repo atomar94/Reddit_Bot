@@ -3,7 +3,7 @@ import pandas as pd
 class SubredditModel:
 
 	#so we dont pull as much data while just looking at graphical stuff
-	testing = True
+	testing = False
 
 	def load(self, subreddit=""):
 		if subreddit == "":
@@ -38,8 +38,8 @@ class SubredditModel:
 			self.sub_limit = 2
 			self.comment_limit = 3
 		else:
-			self.sub_limit = 25
-			self.comment_limit = 32
+			self.sub_limit = 15
+			self.comment_limit = 20
 
 
 		self.praw = praw_object
