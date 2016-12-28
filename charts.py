@@ -34,14 +34,14 @@ class Charts:
 
 		#really messy :/
 		#TODO: Move this code to the subredditmodel filtering code
-		filtered_length = []
-		for index, row in df.iterrows():
-			if np.isnan(row['Filtered_Score']):
-				filtered_length.append(np.nan)
-			else:
-				filtered_length.append(row['Length'])
-		df['Filtered_Length'] = filtered_length
-
+#		filtered_length = []
+#		for index, row in df.iterrows():
+#			if np.isnan(row['Filtered_Score']):
+#				filtered_length.append(np.nan)
+#			else:
+#				filtered_length.append(row['Length'])
+#		df['Filtered_Length'] = filtered_length
+#
 		xmax = df['Filtered_Length'].dropna().quantile(0.85)
 		ymax = df['Filtered_Score'].dropna().quantile(0.90)
 		xmin = -5 #give some space in the graph
@@ -58,7 +58,7 @@ class Charts:
 							kind="hex",
 							shade=True,
 							color="#a349a4",
-							gridsize=300
+							gridsize=1000
 							#xlim=(0, xmax), 
 							#ylim=(0, ymax)
 							) 
