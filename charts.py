@@ -31,8 +31,18 @@ class Charts:
 		subfile.close()
 		df = pd.concat(dfs)
 
-		#drop nan so quantile() never returns NaN.
-		xmax = df['Length'].dropna().quantile(0.85)
+
+		#really messy :/
+		#TODO: Move this code to the subredditmodel filtering code
+		filtered_length = []
+		for index, row in df.iterrows():
+			if np.isnan(row['Filtered_Score']):
+				filtered_length.append(np.nan)
+			else:
+				filtered_length.append(row['Length'])
+		df['Filtered_Length'] = filtered_length
+
+		xmax = df['Filtered_Length'].dropna().quantile(0.85)
 		ymax = df['Filtered_Score'].dropna().quantile(0.90)
 		xmin = -5 #give some space in the graph
 		ymin = min(-10, int(-1*ymax*0.3)) #show upvotes to at least -10
@@ -41,15 +51,17 @@ class Charts:
 		bi_colors = ["#ff0080", "#a349a4", "#0000ff"]
 		bi_palette = sns.color_palette(palette=bi_colors)
 
+
 		print("Plotting...")
-		ax = sns.kdeplot(df['Length'], df['Filtered_Score'],  
-										kind="hex",
-										shade=True,
-										color="#a349a4",
-										gridsize=100
-										#xlim=(0, xmax), 
-										#ylim=(0, ymax)
-										) 
+		ax = sns.kdeplot(df['Filtered_Length'].dropna(), 
+						 df['Filtered_Score'].dropna(),  
+							kind="hex",
+							shade=True,
+							color="#a349a4",
+							gridsize=300
+							#xlim=(0, xmax), 
+							#ylim=(0, ymax)
+							) 
 
 		ax.set_title("All Comments")
 		#ax.set_xticks( Charts.generate_axes(0, xmax) )

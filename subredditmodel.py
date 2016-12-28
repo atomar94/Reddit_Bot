@@ -23,8 +23,10 @@ class SubredditModel:
 		self.comment_df['Filtered_Score'] = self.filter_comments(self.comment_df['Score'])
 
 
-	# given a pandas series, count the occurances of each item and
-	# set any that appear too often (within the top +-1 sigma) to nan.
+	#TODO: Making this general is adding complexity. Scale it back
+	# given a pandas df and a series name, count the occurances of each item and
+	# set any that appear too often (within the top +-1 sigma) to nan, along with
+	# the items in the other columns for that row.
 	#
 	# Returns a list of that series but with any occurances too frequently
 	# set to np.nan
@@ -37,7 +39,7 @@ class SubredditModel:
 			score_count[score] = count
 
 		score_count_df = pd.DataFrame(list(score_count.items()), columns=["Score", "Count"])
-		limit = score_count_df['Count'].quantile(q=1.0-0.68) #+- 1 sigma from mean
+		limit = score_count_df['Count'].quantile(q=0.9) # above this gets trimmed
 		for key in score_count.keys():
 			if score_count[key] > limit:
 				score_count[key] = limit
