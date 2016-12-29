@@ -35,6 +35,8 @@ In order to use PRAW, or any other Reddit API, we first need to register our bot
 To connect PRAW to Reddit we need to supply our client ID, client secret, and user agent.
 
 ```python
+import praw
+
 r = praw.Reddit(client_id = "02......",
     client_secret = "Ts.....",
     user_agent = "A Reddit Scraping bot made by /u/<your-reddit-username>")
@@ -44,9 +46,30 @@ r = praw.Reddit(client_id = "02......",
 
 This returns a Reddit object *r* that we can use to collect all kinds of Reddit data. Let's start by getting the comments from the top 25 submissions in /r/AskReddit
 
-```python    
+```python
 comments = []
 for submission in r.subreddit("askreddit").hot(limit=25):
   submission.comments.replace_more(limit=32)
   comments.append(submission.comments.list())
+```
+
+Here I'm asking for the top 25 posts in "askreddit" and iterating through each of the submission objects. When returning Reddit comments sometimes Reddit will return to you a chunk of comments, analagous to a "Load More Comments" button on the website. To load and return all the comments we use *submission.comments.replace_more(limit=0)*. For more info see [here](https://praw.readthedocs.io/en/latest/tutorials/comments.html#extracting-comments)
+
+Then I append the full list of comments into the *comments* list.
+
+# Loading Everything into Pandas
+
+>pandas is a Python package providing fast, flexible, and expressive data structures designed to make working with “relational” or “labeled” data both easy and intuitive.
+ - pandas.pydata.org
+
+Pandas is a great way to store large data sets in Python. If you've never used Pandas I highly recommend the [10 Minutes to Pandas](http://pandas.pydata.org/pandas-docs/stable/10min.html) tutorial on the Pandas website.
+
+For the rest of the tutorial I am going to analyze Reddit comments based on their length and score so we can load that into a Pandas Dataframe.
+
+```python
+import pandas as pd
+
+df = pd.DataFrame({"Length": [len(x.body) for x in comments],
+                  "Score":   [x.score for x in comments])
+                  })
 ```
