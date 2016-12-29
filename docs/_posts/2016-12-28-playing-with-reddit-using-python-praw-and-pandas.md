@@ -15,11 +15,9 @@ For this project I am using Anaconda Python 3.5 interpreter, which you can downl
 
 To grab Reddit comments I am using PRAW, which I linked above. To download the PRAW package for Anaconda open the Anaconda Prompt and run
 
-<pre>
-  <code class="shell">
-    pip install PRAW
-  </code>
-</pre>
+```shell
+pip install PRAW
+```
 
 ## Registering Your Reddit Bot
 
@@ -36,21 +34,19 @@ In order to use PRAW, or any other Reddit API, we first need to register our bot
 
 To connect PRAW to Reddit we need to supply our client ID, client secret, and user agent.
 
-<pre>
-  <code class="python">
-  r = praw.Reddit(client_id = cfg.client_id,
-      client_secret = cfg.client_secret,
-      user_agent = cfg.user_agent)
-  </code>
-</pre>
+```python
+r = praw.Reddit(client_id = "02......",
+    client_secret = "Ts.....",
+    user_agent = "A Reddit Scraping bot made by /u/<your-reddit-username>")
+```
 
-This returns a Reddit object *r* that we can use to collect all kinds of Reddit data. Let's start by getting the top 25 submissions in /r/AskReddit
+*Note - The user_agent field must be populated with a small description of what you are doing and your reddit username.*
 
-<pre>
-  <code class="python">
-    comments = []
-    for submission in r.subreddit("askreddit").hot(limit=25):
-      submission.comments.replace_more(limit=32)
-      comments.append(submission.comments.list())
-  </code>
-</pre>
+This returns a Reddit object *r* that we can use to collect all kinds of Reddit data. Let's start by getting the comments from the top 25 submissions in /r/AskReddit
+
+```python    
+comments = []
+for submission in r.subreddit("askreddit").hot(limit=25):
+  submission.comments.replace_more(limit=32)
+  comments.append(submission.comments.list())
+```
