@@ -25,14 +25,32 @@ To grab Reddit comments I am using PRAW, which I linked above. To download the P
 
 In order to use PRAW, or any other Reddit API, we first need to register our bot through Reddit. You must have a Reddit account in order to create a bot.
 
-1) Go to the Reddit Application Preferences page [here.](https://ssl.reddit.com/prefs/apps)
+1. Go to the Reddit Application Preferences page [here.](https://ssl.reddit.com/prefs/apps)
 
-2) Create a new Application of type "Web App" and in the Description field put a small description of what your bot does. For mine I simply put "Scraping Reddit comments to play with some data." The About URL field can be left blank, and in the Redirect URL field put "http://example.com/redirect".
+2. Create a new Application of type "Web App" and in the Description field put a small description of what your bot does.
+..* The About URL field can be left blank. The Redirect URL field put "http://example.com/redirect".
 
 ![Reddit Bot Config]({{ site.baseurl }}/images/reddit-bot-fields.png)
 
+# Connecting to Reddit With PRAW
 
+To connect PRAW to Reddit we need to supply our client ID, client secret, and user agent.
 
-Next you can update your site name, avatar and other options using the _config.yml file in the root of your repository (shown below).
+<pre>
+  <code class="python">
+  r = praw.Reddit(client_id = cfg.client_id,
+      client_secret = cfg.client_secret,
+      user_agent = cfg.user_agent)
+  </code>
+</pre>
 
-![_config.yml]({{ site.baseurl }}/images/config.png)
+This returns a Reddit object *r* that we can use to collect all kinds of Reddit data. Let's start by getting the top 25 submissions in /r/AskReddit
+
+<pre>
+  <code class="python">
+    comments = []
+    for submission in r.subreddit("askreddit").hot(limit=25):
+      submission.comments.replace_more(limit=32)
+      comments.append(submission.comments.list())
+  </code>
+</pre>
