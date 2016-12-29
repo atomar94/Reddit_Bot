@@ -128,8 +128,8 @@ if __name__ == "__main__":
 	cfg = configloader.ConfigLoader("credentials.ini")
 
 	r = praw.Reddit(client_id = cfg.client_id,
-					client_secret = cfg.client_secret,
-					user_agent = cfg.user_agent)
+	 client_secret = cfg.client_secret,
+   user_agent = cfg.user_agent)
 ```
 
 ## Collecting Reddit Comments
@@ -162,6 +162,32 @@ For the rest of the tutorial I am going to analyze Reddit comments based on thei
 import pandas as pd
 
 df = pd.DataFrame({"Length": [len(x.body) for x in comments],
-                  "Score":   [x.score for x in comments])
+                  "Score":   [x.score for x in comments]
                   })
+```
+
+I jumped around a bit in this tutorial so at the end your code should roughly look like this. The complete configloader.py file is shown above.
+
+```python
+# main.py
+
+import pandas as pd
+import praw
+import configloader
+
+if __name__ == "__main__":
+	cfg = configloader.ConfigLoader("credentials.ini")
+
+	r = praw.Reddit(client_id = cfg.client_id,
+	 client_secret = cfg.client_secret,
+   user_agent = cfg.user_agent)
+
+   comments = []
+   for submission in r.subreddit("askreddit").hot(limit=25):
+     submission.comments.replace_more(limit=32)
+     comments.append(submission.comments.list())
+
+   df = pd.DataFrame({"Length": [len(x.body) for x in comments],
+                     "Score":   [x.score for x in comments]
+                     })
 ```
