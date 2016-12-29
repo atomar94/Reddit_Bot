@@ -29,7 +29,7 @@ In order to use PRAW, or any other Reddit API, we first need to register our bot
 
 2) Create a new Application of type "Web App" and in the Description field put a small description of what your bot does. For mine I simply put "Scraping Reddit comments to play with some data." The About URL field can be left blank, and in the Redirect URL field put "http://example.com/redirect".
 
-![Reddit-Bot-Config](../images/reddit-bot-fields.png)
+![Reddit-Bot-Config](docs/images/reddit-bot-fields.png)
 
 
 
